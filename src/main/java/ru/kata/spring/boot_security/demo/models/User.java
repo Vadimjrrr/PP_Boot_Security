@@ -1,40 +1,36 @@
 package ru.kata.spring.boot_security.demo.models;
 
-
-
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Set;
 
 @Entity
-@Table(name = "usertable")
+@Table(name = "users")
 public class User implements UserDetails {
-
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column
-    private String username;
-
-    @Column
+    private String name;
+    private String surName;
+    private int age;
     private String password;
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
+    private Collection<Role> roles;
 
+    public User() {}
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-
-    private Set <Role> roles;
-
-    public User() {
+    public User(String name, String surName, int age, String password) {
+        this.name = name;
+        this.surName = surName;
+        this.age = age;
+        this.password = password;
     }
 
-
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -42,29 +38,45 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    // public String getName() {
-    // return username;
-    // }
+    public String getName() {
+        return name;
+    }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurName() {
+        return surName;
+    }
+
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        return roles;
     }
 
     @Override
@@ -74,7 +86,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return getName();
     }
 
     @Override
@@ -95,19 +107,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-
-
-
-    @Override
-    public String toString() {
-
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", roles=" + roles +
-                '}';
     }
 }
